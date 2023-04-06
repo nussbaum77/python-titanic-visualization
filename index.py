@@ -1,15 +1,10 @@
 # Import required libraries
-import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the dataset (using an example dataset: Titanic from seaborn library)
 sns.get_dataset_names()
 df = sns.load_dataset('titanic')
-
-# Display the first 5 rows of the dataset
-print(df.head())
 
 # Data cleaning and preprocessing
 # Check for missing values
@@ -25,33 +20,36 @@ df.drop(columns=['deck', 'embark_town', 'alive', 'who', 'adult_male'], inplace=T
 # Summary statistics
 print(df.describe())
 
-# Visualize the data
-# Survival count by gender
-sns.countplot(x='sex', hue='survived', data=df)
-plt.title("Survival Count by Gender")
-plt.show()
+# Visualize the data using subplots
+fig, axes = plt.subplots(3, 2, figsize=(12, 16))
 
-# Age distribution of passengers
-sns.histplot(df['age'], kde=True)
-plt.title("Age Distribution of Passengers")
-plt.show()
+# 1. Histogram (Age distribution of passengers)
+sns.histplot(df['age'], kde=True, ax=axes[0, 0])
+axes[0, 0].set_title("Age Distribution of Passengers")
 
-# Survival rate by passenger class
-sns.barplot(x='class', y='survived', data=df)
-plt.title("Survival Rate by Passenger Class")
-plt.show()
+# 2. Pie chart (Proportion of passengers by class)
+class_counts = df['class'].value_counts()
+axes[0, 1].pie(class_counts, labels=class_counts.index, autopct='%1.1f%%')
+axes[0, 1].set_title("Proportion of Passengers by Class")
 
-# Pair plot to visualize relationships between variables
-sns.pairplot(df, hue='survived')
-plt.show()
+# 3. Bar chart (Survival rate by passenger class)
+sns.barplot(x='class', y='survived', data=df, ax=axes[1, 0])
+axes[1, 0].set_title("Survival Rate by Passenger Class")
 
-# Heatmap to visualize correlation between variables
-sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
-plt.title("Correlation Heatmap")
-plt.show()
+# 4. Scatter plot (Fare vs. Age, colored by survival status)
+sns.scatterplot(x='age', y='fare', hue='survived', data=df, ax=axes[1, 1])
+axes[1, 1].set_title("Fare vs. Age")
 
-# Conclusions
-# Based on the visualizations, we can conclude that:
-# 1. Female passengers had a higher survival rate than male passengers.
-# 2. Passengers in the first class had a higher survival rate compared to other classes.
-# 3. Age and fare seem to have a weak correlation with survival rate.
+# 5. Survival count by gender
+sns.countplot(x='sex', hue='survived', data=df, ax=axes[2, 0])
+axes[2, 0].set_title("Survival Count by Gender")
+
+# 6. Box plot (Age distribution by class and survival status)
+sns.boxplot(x='class', y='age', hue='survived', data=df, ax=axes[2, 1])
+axes[2, 1].set_title("Age Distribution by Class and Survival Status")
+
+# Adjust the layout
+plt.tight_layout()
+
+# Display all the visualizations
+plt.show()
